@@ -6,6 +6,7 @@ SCRIPT_DIR=$(dirname "$0")
 # Check if the correct number of arguments is provided
 if [ "$#" -ne 2 ]; then
   echo "Usage: $0 source_folder tag"
+  echo "Script to tag all pictures in a folder with a specific tag using exiftool"
   exit 1
 fi
 
