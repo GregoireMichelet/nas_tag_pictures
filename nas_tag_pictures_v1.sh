@@ -42,12 +42,12 @@ echo "--------------------------------" >> "$log_file"
 export SOURCE_FOLDER
 
 # Remove all existing subjects for all files in the destination folder and redirect output to log file
-exiftool -r -overwrite_original -XMP:Subject= "$SOURCE_FOLDER" >> "$log_file" 2>&1
+perl /usr/share/applications/ExifTool/exiftool -r -overwrite_original -XMP:Subject= "$SOURCE_FOLDER" >> "$log_file" 2>&1
 
 echo "--------------------------------" >> "$log_file"
 
 # Add the new TAG to the XMP IPTC "Subject" metadata for all files in the destination folder and redirect output to log file
-exiftool -r -overwrite_original -XMP:Subject+="$TAG" "$SOURCE_FOLDER" >> "$log_file" 2>&1
+perl /usr/share/applications/ExifTool/exiftool -r -overwrite_original -XMP:Subject+="$TAG" "$SOURCE_FOLDER" >> "$log_file" 2>&1
 
 echo "--------------------------------" >> "$log_file"
 echo "END script : nas_tag_pictures_v1 at $(date +%Y%m%d_%H%M%S)" >> "$log_file"
