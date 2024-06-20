@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# Potentielle amélioration : trouver avec exiftool les fichiers qui n'ont pas le tag dans les dossiers
-#exiftool -if '$XMP-dc:Subject=~/Whatsapp/' -r INPUT/
-
 # Get the directory where the script is located
 SCRIPT_DIR=$(dirname "$0")
 
@@ -39,18 +36,33 @@ log_file="$LOGS_FOLDER/LOG_nas_tag_pictures_v2_$(date +%Y%m%d_%H%M%S).log"
 
 echo "START script : nas_tag_pictures_v2 at $(date +%Y%m%d_%H%M%S)" >> "$log_file"
 echo "Executed in source folder : '$SOURCE_FOLDER'" >> "$log_file"
-
-exiftool -if "not \$XMP-dc:Subject=~/${TAG}/" -r INPUT/ -T -directory -filename | awk '{print $1 "/" $2}' > not_matching_files.txt
-
-echo "--------------------------------" >> "$log_file"
-echo "Step 1 : removing all existing subjects" >> "$log_file"
-echo "--------------------------------" >> "$log_file"
-
 echo "START script : nas_tag_pictures_v2 at $(date +%Y%m%d_%H%M%S)"
 echo "Executed in source folder : '$SOURCE_FOLDER'"
+
+echo "--------------------------------" >> "$log_file"
+echo "Step 1 : finding all files that do not have '$TAG' in their subject" >> "$log_file"
+echo "--------------------------------" >> "$log_file"
 echo "--------------------------------"
-echo "Step 1 : removing all existing subjects"
+echo "Step 1 : finding all files that do not have $TAG in their subject"
+
+exiftool -if "not \$XMP-dc:Subject=~/${TAG}/" -r "$SOURCE_FOLDER" -T -directory -filename | awk '{print $1 "/" $2}' > "$SCRIPT_DIR/not_matching_files.txt"
+
+line_count=$(wc -l < "$SCRIPT_DIR/not_matching_files.txt")
+echo "Count of files found : $line_count" >> "$log_file"
+echo "Count of files found : $line_count"
+
+# Check if line_count is 0 and exit the script if true
+if [ "$line_count" -eq 0 ]; then
+    echo "--------------------------------" >> "$log_file"
+    echo "No files found without the tag. Exiting." >> "$log_file"
+    echo "--------------------------------"
+    echo "No files found without the tag. Exiting."
+    rm "$SCRIPT_DIR/not_matching_files.txt"
+    exit 1
+fi
+
 echo "--------------------------------"
+echo "Step 2 : removing all existing subjects on those files"
 
 export SOURCE_FOLDER
 
@@ -58,18 +70,19 @@ export SOURCE_FOLDER
 cat not_matching_files.txt | xargs -I {} exiftool -r -v -overwrite_original -XMP:Subject= "{}" >> "$log_file" 2>&1
 
 echo "--------------------------------" >> "$log_file"
-echo "Step 2: adding the new TAG : '$TAG'" >> "$log_file"
+echo "Step 3 : adding the new TAG : '$TAG'" >> "$log_file"
 echo "--------------------------------" >> "$log_file"
-
 echo "--------------------------------"
-echo "Step 2: adding the new TAG : '$TAG'"
-echo "--------------------------------"
+echo "Step 3 : adding the new TAG : '$TAG'"
 
 # Add the new TAG to the XMP IPTC "Subject" metadata for all files in the destination folder and redirect output to log file
-exiftool -r -v -overwrite_original -XMP:Subject+="$TAG" "$SOURCE_FOLDER" >> "$log_file" 2>&1
+cat not_matching_files.txt | xargs -I {} exiftool -r -v -overwrite_original -XMP:Subject+="$TAG" "{}" >> "$log_file" 2>&1
 
 echo "--------------------------------" >> "$log_file"
 echo "END script : nas_tag_pictures_v2 at $(date +%Y%m%d_%H%M%S)" >> "$log_file"
+
+# Removing not_matching_files.txt file
+rm "$SCRIPT_DIR/not_matching_files.txt"
 
 # Print log file location
 echo "--------------------------------"
