@@ -43,11 +43,14 @@ echo "--------------------------------" >> "$log_file"
 echo "Step 1 : finding all files that do not have '$TAG' in their subject" >> "$log_file"
 echo "--------------------------------" >> "$log_file"
 echo "--------------------------------"
-echo "Step 1 : finding all files that do not have $TAG in their subject"
+echo "Step 1 : finding all files that do not have '$TAG' in their subject"
 
 exiftool -if "not \$XMP-dc:Subject=~/${TAG}/" -r "$SOURCE_FOLDER" -T -directory -filename | awk '{print $1 "/" $2}' > "$SCRIPT_DIR/not_matching_files.txt"
 
-line_count=$(wc -l < "$SCRIPT_DIR/not_matching_files.txt")
+# Exclude lines ending with '-' or containing '@eaDir'
+grep -Ev '(\-$|@eaDir)' not_matching_files.txt > cleaned_not_matching_files.txt
+
+line_count=$(wc -l < "$SCRIPT_DIR/cleaned_not_matching_files.txt")
 echo "Count of files found : $line_count" >> "$log_file"
 echo "Count of files found : $line_count"
 
@@ -83,6 +86,7 @@ echo "END script : nas_tag_pictures_v2 at $(date +%Y%m%d_%H%M%S)" >> "$log_file"
 
 # Removing not_matching_files.txt file
 rm "$SCRIPT_DIR/not_matching_files.txt"
+rm "$SCRIPT_DIR/cleaned_not_matching_files.txt"
 
 # Print log file location
 echo "--------------------------------"
