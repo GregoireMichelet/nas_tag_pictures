@@ -32,26 +32,40 @@ if [ ! -d "$LOGS_FOLDER" ]; then
 fi
 
 # Create a log file with a timestamp
-log_file="$LOGS_FOLDER/LOG_nas_tag_pictures_v1_$(date +%Y%m%d_%H%M%S).log"
+log_file="$LOGS_FOLDER/LOG_nas_tag_pictures_v2_$(date +%Y%m%d_%H%M%S).log"
 
-echo "START script : nas_tag_pictures_v1 at $(date +%Y%m%d_%H%M%S)" >> "$log_file"
+echo "START script : nas_tag_pictures_v2 at $(date +%Y%m%d_%H%M%S)" >> "$log_file"
+echo "Executed in source folder : '$SOURCE_FOLDER'" >> "$log_file"
 echo "--------------------------------" >> "$log_file"
-echo "START executing exiftool at $(date +%Y%m%d_%H%M%S)" >> "$log_file"
+echo "Step 1 : removing all existing subjects" >> "$log_file"
 echo "--------------------------------" >> "$log_file"
+
+echo "START script : nas_tag_pictures_v2 at $(date +%Y%m%d_%H%M%S)"
+echo "Executed in source folder : '$SOURCE_FOLDER'"
+echo "--------------------------------"
+echo "Step 1 : removing all existing subjects"
+echo "--------------------------------"
 
 export SOURCE_FOLDER
 
 # Remove all existing subjects for all files in the destination folder and redirect output to log file
-perl /usr/share/applications/ExifTool/exiftool -r -overwrite_original -XMP:Subject= "$SOURCE_FOLDER" >> "$log_file" 2>&1
+perl /usr/share/applications/ExifTool/exiftool -r -v -overwrite_original -XMP:Subject= "$SOURCE_FOLDER" >> "$log_file" 2>&1
 
 echo "--------------------------------" >> "$log_file"
+echo "Step 2: adding the new TAG : '$TAG'" >> "$log_file"
+echo "--------------------------------" >> "$log_file"
+
+echo "--------------------------------"
+echo "Step 2: adding the new TAG : '$TAG'"
+echo "--------------------------------"
 
 # Add the new TAG to the XMP IPTC "Subject" metadata for all files in the destination folder and redirect output to log file
-perl /usr/share/applications/ExifTool/exiftool -r -overwrite_original -XMP:Subject+="$TAG" "$SOURCE_FOLDER" >> "$log_file" 2>&1
+perl /usr/share/applications/ExifTool/exiftool -r -v -overwrite_original -XMP:Subject+="$TAG" "$SOURCE_FOLDER" >> "$log_file" 2>&1
 
 echo "--------------------------------" >> "$log_file"
-echo "END script : nas_tag_pictures_v1 at $(date +%Y%m%d_%H%M%S)" >> "$log_file"
+echo "END script : nas_tag_pictures_v2 at $(date +%Y%m%d_%H%M%S)" >> "$log_file"
 
 # Print log file location
 echo "--------------------------------"
+echo "END script : nas_tag_pictures_v2 at $(date +%Y%m%d_%H%M%S)"
 echo "Log file created at: $log_file"
