@@ -50,7 +50,7 @@ echo "--------------------------------" >> "$log_file"
 echo "--------------------------------"
 echo "Step 1 : finding all files that do not have '$TAG' in their subject"
 
-exiftool -if "not \$XMP-dc:Subject=~/${TAG}/" -r "$SOURCE_FOLDER" -T -directory -filename | awk '{print $1 "/" $2}' > "$SCRIPT_DIR/not_matching_files.txt"
+perl /usr/share/applications/ExifTool/exiftool -if "not \$XMP-dc:Subject=~/${TAG}/" -r "$SOURCE_FOLDER" -T -directory -filename | awk '{print $1 "/" $2}' > "$SCRIPT_DIR/not_matching_files.txt"
 
 # Filter lines ending with '-' or containing '@eaDir'
 grep -E '(\-$|@eaDir)' not_matching_files.txt > filtered_not_matching_files.txt
@@ -78,7 +78,7 @@ echo "Step 2 : removing all existing subjects on those files"
 export SOURCE_FOLDER
 
 # Remove all existing subjects for all files in the destination folder and redirect output to log file
-cat cleaned_not_matching_files.txt | xargs -I {} exiftool -r -v -overwrite_original -XMP:Subject= "{}" >> "$log_file" 2>&1
+cat cleaned_not_matching_files.txt | xargs -I {} perl /usr/share/applications/ExifTool/exiftool -r -v -overwrite_original -XMP:Subject= "{}" >> "$log_file" 2>&1
 
 echo "--------------------------------" >> "$log_file"
 echo "Step 3 : adding the new TAG : '$TAG'" >> "$log_file"
@@ -87,15 +87,15 @@ echo "--------------------------------"
 echo "Step 3 : adding the new TAG : '$TAG'"
 
 # Add the new TAG to the XMP IPTC "Subject" metadata for all files in the destination folder and redirect output to log file
-cat cleaned_not_matching_files.txt | xargs -I {} exiftool -r -v -overwrite_original -XMP:Subject+="$TAG" "{}" >> "$log_file" 2>&1
+cat cleaned_not_matching_files.txt | xargs -I {} perl /usr/share/applications/ExifTool/exiftool -r -v -overwrite_original -XMP:Subject+="$TAG" "{}" >> "$log_file" 2>&1
 
 echo "--------------------------------" >> "$log_file"
 echo "END script : nas_tag_pictures_v2 at $(date +%Y%m%d_%H%M%S)" >> "$log_file"
 
 # Removing not_matching_files.txt file
-#rm "$SCRIPT_DIR/not_matching_files.txt"
-#rm "$SCRIPT_DIR/filtered_not_matching_files.txt"
-#rm "$SCRIPT_DIR/cleaned_not_matching_files.txt"
+rm "$SCRIPT_DIR/not_matching_files.txt"
+rm "$SCRIPT_DIR/filtered_not_matching_files.txt"
+rm "$SCRIPT_DIR/cleaned_not_matching_files.txt"
 
 # Print log file location
 echo "--------------------------------"
