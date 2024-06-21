@@ -1,10 +1,9 @@
 #!/bin/bash
 
-#
-#
-#
-#
-#
+# INPUT folder :
+# - Files starting with '-' or containing '@eaDir' should be ignored
+# - Files with the name 'Mes-photos-*' have the tag 'Mes-photos' initially
+# - Files with the name 'Whatsapp-*' have the tag 'Whatsapp' initially
 
 # Get the directory where the script is located
 SCRIPT_DIR=$(dirname "$0")
