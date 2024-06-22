@@ -23,4 +23,11 @@ find "$input_dir" -depth -type d -name "*---*" | while IFS= read -r dir; do
     mv "$dir" "$parent/$newdir"
 done
 
+# Find and rename files with spaces in their names
+find "$input_dir" -depth -type f -name "* *" | while IFS= read -r file; do
+    parent=$(dirname "$file")
+    newfile=$(basename "$file" | sed 's/ /-/g')
+    mv "$file" "$parent/$newfile"
+done
+
 echo "Renaming completed."
