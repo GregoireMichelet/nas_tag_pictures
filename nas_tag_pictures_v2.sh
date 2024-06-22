@@ -53,10 +53,10 @@ echo "Step 1 : finding all files that do not have '$TAG' in their subject"
 perl /usr/share/applications/ExifTool/exiftool -if "not \$XMP-dc:Subject=~/${TAG}/" -r "$SOURCE_FOLDER" -T -directory -filename | awk '{print $1 "/" $2}' > "$SCRIPT_DIR/not_matching_files.txt"
 
 # Filter lines ending with '-' or containing '@eaDir'
-grep -E '(\-$|@eaDir|.html$)' not_matching_files.txt > filtered_not_matching_files.txt
+grep -E '(\-$|@eaDir|\.html$)' not_matching_files.txt > filtered_not_matching_files.txt
 
 # Exclude lines ending with '-' or containing '@eaDir'
-grep -Ev '(\-$|@eaDir|.html$)' not_matching_files.txt > cleaned_not_matching_files.txt
+grep -Ev '(\-$|@eaDir|\.html$)' not_matching_files.txt > cleaned_not_matching_files.txt
 
 line_count=$(wc -l < "$SCRIPT_DIR/cleaned_not_matching_files.txt")
 echo "Count of files found : $line_count" >> "$log_file"
