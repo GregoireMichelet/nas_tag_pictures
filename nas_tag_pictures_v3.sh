@@ -37,11 +37,11 @@ if [ ! -d "$LOGS_FOLDER" ]; then
 fi
 
 # Create a log file with a timestamp
-log_file="$LOGS_FOLDER/LOG_nas_tag_pictures_v2_$(date +%Y%m%d_%H%M%S).log"
+log_file="$LOGS_FOLDER/LOG_nas_tag_pictures_v3_$(date +%Y%m%d_%H%M%S).log"
 
-echo "START script : nas_tag_pictures_v2 at $(date +%Y%m%d_%H%M%S)" >> "$log_file"
+echo "START script : $0 at $(date +%Y%m%d_%H%M%S)" >> "$log_file"
 echo "Executed in source folder : '$SOURCE_FOLDER'" >> "$log_file"
-echo "START script : nas_tag_pictures_v2 at $(date +%Y%m%d_%H%M%S)"
+echo "START script : $0 at $(date +%Y%m%d_%H%M%S)"
 echo "Executed in source folder : '$SOURCE_FOLDER'"
 
 echo "--------------------------------" >> "$log_file"
@@ -52,11 +52,8 @@ echo "Step 1 : finding all files that do not have '$TAG' in their subject"
 
 perl /usr/share/applications/ExifTool/exiftool -if "not \$XMP-dc:Subject=~/${TAG}/" -r "$SOURCE_FOLDER" -T -directory -filename | awk '{print $1 "/" $2}' > "$SCRIPT_DIR/not_matching_files.txt"
 
-# Filter lines ending with '-' or containing '@eaDir'
-grep -E '(\-$|@eaDir|\.html$)' not_matching_files.txt > filtered_not_matching_files.txt
-
-# Exclude lines ending with '-' or containing '@eaDir'
-grep -Ev '(\-$|@eaDir|\.html$)' not_matching_files.txt > cleaned_not_matching_files.txt
+# Include only .jpg and .MP4 files and exclude lines ending with '-' or containing '@eaDir'
+awk '/\.jpg$|\.JPG$|\.mp4$|\.MP4$/ && !/(\-$|@eaDir)/' not_matching_files.txt > cleaned_not_matching_files.txt
 
 line_count=$(wc -l < "$SCRIPT_DIR/cleaned_not_matching_files.txt")
 echo "Count of files found : $line_count" >> "$log_file"
@@ -69,6 +66,7 @@ if [ "$line_count" -eq 0 ]; then
     echo "--------------------------------"
     echo "No files found without the tag. Exiting."
     rm "$SCRIPT_DIR/not_matching_files.txt"
+    rm "$SCRIPT_DIR/cleaned_not_matching_files.txt"
     exit 1
 fi
 
@@ -90,14 +88,13 @@ echo "Step 3 : adding the new TAG : '$TAG'"
 cat cleaned_not_matching_files.txt | xargs -I {} perl /usr/share/applications/ExifTool/exiftool -r -v -overwrite_original -XMP:Subject+="$TAG" "{}" >> "$log_file" 2>&1
 
 echo "--------------------------------" >> "$log_file"
-echo "END script : nas_tag_pictures_v2 at $(date +%Y%m%d_%H%M%S)" >> "$log_file"
+echo "END script : $0 at $(date +%Y%m%d_%H%M%S)" >> "$log_file"
 
 # Removing not_matching_files.txt file
 rm "$SCRIPT_DIR/not_matching_files.txt"
-rm "$SCRIPT_DIR/filtered_not_matching_files.txt"
 rm "$SCRIPT_DIR/cleaned_not_matching_files.txt"
 
 # Print log file location
 echo "--------------------------------"
-echo "END script : nas_tag_pictures_v2 at $(date +%Y%m%d_%H%M%S)"
+echo "END script : $0 at $(date +%Y%m%d_%H%M%S)"
 echo "Log file created at: $log_file"
