@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Get the directory where the script is located
+SCRIPT_DIR=$(dirname "$0")
+
 # Check if a directory was provided as an argument
 if [ -z "$1" ]; then
     echo "Usage: $0 <directory>"
