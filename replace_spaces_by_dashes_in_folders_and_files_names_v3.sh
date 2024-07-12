@@ -57,20 +57,24 @@ echo "Executed in source folder : '$SOURCE_FOLDER'"
 # We want to keep existing dashes in names >> first use to replace space by dash then replacing '---' by '-'
 
 echo "--------------------------------" >> "$log_file"
-echo "Step 1 : replacing spaces by '-'" >> "$log_file"
+echo "Step 1 : In directories, replacing spaces by '-'" >> "$log_file"
 echo "--------------------------------"
-echo "Step 1 : replacing spaces by '-'"
+echo "Step 1 : In directories, replacing spaces by '-'"
 
 rename_dirs "* *" 's/ /-/g'
 
 echo "--------------------------------" >> "$log_file"
-echo "Step 2 : replacing '---' by '-'" >> "$log_file"
+echo "Step 2 : In directories, replacing '---' by '-'" >> "$log_file"
 echo "--------------------------------"
-echo "Step 2 : replacing '---' by '-'"
+echo "Step 2 : In directories, replacing '---' by '-'"
 
 rename_dirs "*---*" 's/-\{2,\}/-/g'
 
-# Rename files with spaces in their names
+echo "--------------------------------" >> "$log_file"
+echo "Step 3 : In files, replacing spaces by '-'" >> "$log_file"
+echo "--------------------------------"
+echo "Step 3 : In files, replacing spaces by '-'"
+
 rename_files "* *" 's/ /-/g'
 
 echo "--------------------------------" >> "$log_file"
