@@ -50,6 +50,8 @@ rename_files() {
 
 echo "START script : $0 at $(date +%Y%m%d_%H%M%S)" >> "$log_file"
 echo "Executed in source folder : '$SOURCE_FOLDER'" >> "$log_file"
+echo "START script : $0 at $(date +%Y%m%d_%H%M%S)"
+echo "Executed in source folder : '$SOURCE_FOLDER'"
 
 # Rename directories with spaces in their names
 # We want to keep existing dashes in names >> first use to replace space by dash then replacing '---' by '-'
